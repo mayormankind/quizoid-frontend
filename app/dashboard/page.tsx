@@ -8,6 +8,10 @@ const studentsData = [
   { name: 'Olayemi Moses', matricNumber: '20203161', email: 'jane@example.com', level: '200', department: 'Mathematics' },
   { name: 'Obadimu Ismail', matricNumber: '20203161', email: 'alice@example.com', level: '300', department: 'Computer Science' },
   { name: 'Adeyemi Bidemi', matricNumber: '20205719', email: 'bob@example.com', level: '400', department: 'Statistics' },
+  { name: 'Olayemi Moses', matricNumber: '20203161', email: 'jane@example.com', level: '200', department: 'Mathematics' },
+  { name: 'Obadimu Ismail', matricNumber: '20203161', email: 'alice@example.com', level: '300', department: 'Computer Science' },
+  { name: 'Olayemi Moses', matricNumber: '20203161', email: 'jane@example.com', level: '200', department: 'Mathematics' },
+  { name: 'Obadimu Ismail', matricNumber: '20203161', email: 'alice@example.com', level: '300', department: 'Computer Science' },
   // Add more student data here
 ];
 
