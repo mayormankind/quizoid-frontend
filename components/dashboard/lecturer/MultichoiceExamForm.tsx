@@ -4,10 +4,11 @@ import { RiAddFill } from 'react-icons/ri';
 
 interface MultichoiceExamFormProps {
     courseCode: string;
+    action: string;
     onSubmit: (data: any) => void;
 }
 
-const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, onSubmit }) => {
+const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, action, onSubmit }) => {
     const [examData, setExamData] = useState({
         instruction: '',
         questions: [{ question: '', options: ['', '', '', ''], correctOption: 0 }],
@@ -100,7 +101,7 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, o
                     </button>
                 </div>
                 <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-                    Create Exam
+                    {action === 'create' ? 'Create Exam' : 'Save Changes'}
                 </button>
             </form>
         </div>

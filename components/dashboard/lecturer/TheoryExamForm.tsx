@@ -3,10 +3,11 @@ import { RiAddFill } from 'react-icons/ri';
 
 interface TheoryExamFormProps {
     courseCode: string;
+    action: string;
     onSubmit: (data: any) => void;
 }
 
-const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, onSubmit }) => {
+const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onSubmit }) => {
     const [examData, setExamData] = useState({
         instruction: '',
         questions: [''],
@@ -55,7 +56,7 @@ const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, onSubmit })
                     </button>
                 </div>
                 <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-                    Create Exam
+                    {action === 'create' ? 'Create Exam' : 'Save Changes'}
                 </button>
             </form>
         </div>

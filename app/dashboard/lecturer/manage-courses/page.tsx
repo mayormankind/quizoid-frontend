@@ -1,21 +1,23 @@
 "use client"
 
+import { useRouter } from 'next/navigation';
 import CourseCard from '@/components/dashboard/lecturer/CourseCard';
 import ExamChoiceModal from '@/components/dashboard/lecturer/ExamChoiceModal';
-import MultichoiceExamForm from '@/components/dashboard/lecturer/MultichoiceExamForm';
-import TheoryExamForm from '@/components/dashboard/lecturer/TheoryExamForm';
 import React, { useState } from 'react'
 
 
+interface Course {
+  code: string;
+  title: string;
+  units: number;
+  examExists: boolean;
+  examType?: 'theory' | 'multichoice';
+}
+
 export default function ManageCourses(){
     
-    interface Course {
-      code: string;
-      title: string;
-      units: number;
-      examExists: boolean;
-    }
-    
+    const router = useRouter();
+
     const courses: Course[] = [
       {
         code: 'CSC404',
@@ -34,19 +36,19 @@ export default function ManageCourses(){
         title: 'Web Arcitecture and Oragnazation',
         units: 2,
         examExists: true,
+        examType: 'theory',
       },
     ];
     
     const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-    const [examType, setExamType] = useState<'theory' | 'multichoice' | null>(null);
 
-    const toggleDropdown = (courseCode: string) => {
+    const toggleDropdown = (courseCode: string)=> {
         setDropdownOpen(prevState => ({ ...prevState, [courseCode]: !prevState[courseCode] }));
     };
 
-    const handleCreateExam = (course: Course) => {
+    const handleCreateExam = (course: Course)=> {
         if (course.examExists) {
             alert('Exam already exists for this course.');
             return;
@@ -55,15 +57,19 @@ export default function ManageCourses(){
         setIsModalOpen(true);
     };
 
-    const handleEditExam = (course: Course) => {
+    const handleEditExam = (course: Course)=> {
         if (!course.examExists) {
             alert('No exam exists for this course.');
             return;
         }
-        alert(`Edit exam for ${course.code}`); // Replace with your logic to edit an exam
+        if (course.examType) {
+          router.push(`/dashboard/lecturer/exam-form/${course.examType}?code=${course.code}&action=edit`);
+        } else {
+          alert('Exam type is not specified for this course.');
+        }
     };
 
-    const handleDeleteExam = (course: Course) => {
+    const handleDeleteExam = (course: Course)=> {
         if (!course.examExists) {
             alert('No exam exists to delete for this course.');
             return;
@@ -72,16 +78,14 @@ export default function ManageCourses(){
         course.examExists = false;
     };
 
+    
     const handleSelectExamType = (type: 'theory' | 'multichoice') => {
-        setExamType(type);
-        setIsModalOpen(false);
+      if (selectedCourse) {
+          router.push(`/dashboard/lecturer/exam-form/${type}?code=${selectedCourse.code}&action=create`);
+      }
+      setIsModalOpen(false);
     };
-
-    const handleSubmitExam = (examData: any) => {
-        alert(`Creating ${examType} exam for ${selectedCourse?.code}`);
-        console.log(examData);
-        // Replace with your logic to submit the exam data
-    };
+  
     
   
     return (
@@ -102,12 +106,6 @@ export default function ManageCourses(){
           </tbody>
         </table>
         <ExamChoiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectExamType={handleSelectExamType}/>
-        {examType === 'theory' && selectedCourse && (
-          <TheoryExamForm courseCode={selectedCourse.code} onSubmit={handleSubmitExam} />
-        )}
-        {examType === 'multichoice' && selectedCourse && (
-          <MultichoiceExamForm courseCode={selectedCourse.code} onSubmit={handleSubmitExam} />
-        )}
       </div>
     );
   };
