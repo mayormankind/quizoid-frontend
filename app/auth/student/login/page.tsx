@@ -26,19 +26,16 @@ export default function StudentLogin() {
       Cookies.set('token', response.data.token, {expires: 1, path: '/', sameSite: 'Strict'}); 
       console.log("Login successful:", response.data);
       toast.success("Login successful");
-      // router.push('/dashboard', { scroll: false });
+      router.push('/exam', { scroll: false });
     }
     catch (error: any) {
       if (error.response) {
         toast.error(`Login failed: ${error.response.data.message}`);
       } else if (error.request) {
-        // Request was made but no response was received
         toast.error('login failed: No response from server');
       } else {
-        // Something else happened in setting up the request
         toast.error(`login failed: ${error.message}`);
         console.error("Login failed:", error?.response?.data?.message);
-        // Display error message using toastify
         toast.error("Invalid matric number or password.");
       }
 

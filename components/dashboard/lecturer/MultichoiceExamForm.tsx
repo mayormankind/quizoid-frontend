@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
+// import { createExam } from '../api/exam';
 
 
 interface MultichoiceExamFormProps {
@@ -8,8 +9,19 @@ interface MultichoiceExamFormProps {
     onSubmit: (data: any) => void;
 }
 
+interface Question {
+    question: string;
+    options: string[];
+    correctOption: number;
+}
+
+interface ExamData {
+    instruction: string;
+    questions: Question[];
+}
+
 const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, action, onSubmit }) => {
-    const [examData, setExamData] = useState({
+    const [examData, setExamData] = useState<ExamData>({
         instruction: '',
         questions: [{ question: '', options: ['', '', '', ''], correctOption: 0 }],
     });
@@ -43,6 +55,16 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, a
         e.preventDefault();
         onSubmit(examData);
     };
+
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     try {
+    //         await createExam(examData);
+    //         onSubmit(examData);
+    //     } catch (error) {
+    //         console.error('Error creating exam:', error.message);
+    //     }
+    // };
 
     return (
         <div className="w-full h-full bg-white rounded-xl p-4">

@@ -5,7 +5,7 @@ export default function CourseCard(props:any) {
     <tr key={props.course.code}>
         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{props.course.code}</td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{props.course.title}</td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{props.course.units}</td>
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{props.course.unit}</td>
         <td className="relative px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             <button className='text-white p-2 rounded-xl bg-green-500' onClick={() => props.toggleDropdown(props.course.code)}>Manage course</button>
         

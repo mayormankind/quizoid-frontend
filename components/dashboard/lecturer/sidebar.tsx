@@ -6,17 +6,30 @@ import { FaListCheck } from 'react-icons/fa6'
 import { MdGroups, MdScoreboard } from 'react-icons/md'
 import { RiLogoutBoxLine, RiQuestionAnswerLine, RiSettingsLine } from 'react-icons/ri'
 import { useContent } from './ContentContext';
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/contexts/UserContext'
+import { toast } from 'react-toastify'
 
 export default function Sidebar() {
 
     const { content, setContent } = useContent();
+    const { logout } = useUser();
+    const router = useRouter();
 
     const navs = [
         {id:0, label:'Dashboard', icon:<FaHome/>, ref:'/dashboard/lecturer'},
         {id:1, label:'Courses Taken', icon:<FaListCheck/>, ref:'/dashboard/lecturer/manage-courses'},
         {id:2, label:'Theory Answers', icon:<RiQuestionAnswerLine/>, ref:'/dashboard/lecturer/answers'},
         {id:3, label:'View Results', icon:<MdScoreboard/>, ref:'/dashboard/lecturer/view-results'},
-    ]
+    ];
+
+    const handleSignOut = () =>{
+        toast.success('You have signed out sucessfully');
+        router.push('/auth/lecturer/login');
+        logout();
+        console.log('You have signed out chief');
+
+    }
   return (
     <div className='w-3/12 bg-white h-screen'>
         <div className="flex flex-col justify-between h-full p-8">
@@ -40,12 +53,12 @@ export default function Sidebar() {
                         <h2 className={`${content === 'Settings' ? 'font-medium text-gray-700':'text-gray-500'}`}>Settings</h2>
                     </li>
                 </Link>
-                <Link href="/auth/lecturer/login">
-                    <li className={'flex text-red-500 items-center p-4 gap-4 hover:bg-green-50'}>
+                {/* <Link href="/auth/lecturer/login"> */}
+                    <li className={'flex text-red-500 items-center p-4 gap-4 hover:bg-green-50'} onClick={handleSignOut}>
                         <i className='text-[17px]'><RiLogoutBoxLine/></i>
                         <h2 className="">Logout</h2>
                     </li>
-                </Link>
+                {/* </Link> */}
             </ul>
         </div>
     </div>

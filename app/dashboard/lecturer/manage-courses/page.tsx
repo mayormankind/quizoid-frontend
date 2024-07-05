@@ -3,42 +3,26 @@
 import { useRouter } from 'next/navigation';
 import CourseCard from '@/components/dashboard/lecturer/CourseCard';
 import ExamChoiceModal from '@/components/dashboard/lecturer/ExamChoiceModal';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import { createExam, getExams, updateExam, getExamsByLecturerID, deleteExam } from '@/api/exam';
+import { useUser } from '@/contexts/UserContext';
+import axios from 'axios';
 
 
 interface Course {
   code: string;
   title: string;
-  units: number;
-  examExists: boolean;
+  unit: number;
+  examExists?: boolean;
   examType?: 'theory' | 'multichoice';
 }
 
 export default function ManageCourses(){
-    
-    const router = useRouter();
+  const { user } = useUser();
+  const router = useRouter();
+  const url = process.env.NEXT_PUBLIC_BASE_API_URL;
 
-    const courses: Course[] = [
-      {
-        code: 'CSC404',
-        title: 'Artificial Intelligence and Machine Learning',
-        units: 3,
-        examExists: false,
-      },
-      {
-        code: 'CSC405',
-        title: 'Artificial Intelligence and Machine Learning',
-        units: 3,
-        examExists: false,
-      },
-      {
-        code: 'IFS402',
-        title: 'Web Arcitecture and Oragnazation',
-        units: 2,
-        examExists: true,
-        examType: 'theory',
-      },
-    ];
+    const [ courses, setCourses ] = useState<Course[]>(user?.details.courses);
     
     const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,13 +53,20 @@ export default function ManageCourses(){
         }
     };
 
-    const handleDeleteExam = (course: Course)=> {
-        if (!course.examExists) {
-            alert('No exam exists to delete for this course.');
-            return;
-        }
-        alert(`Delete exam for ${course.code}`); // Replace with your logic to delete an exam
-        course.examExists = false;
+
+    const handleDeleteExam = async (course: Course) => {
+
+      if (!course.examExists) {
+        alert('No exam exists to delete for this course.');
+        return;
+      }
+      try {
+        await deleteExam(course.code);
+        setCourses(prevCourses => prevCourses.map(c => c.code === course.code ? { ...c, examExists: false } : c));
+        alert(`Deleted exam for ${course.code}`);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     
@@ -85,7 +76,6 @@ export default function ManageCourses(){
       }
       setIsModalOpen(false);
     };
-  
     
   
     return (
@@ -95,12 +85,14 @@ export default function ManageCourses(){
             <tr className="uppercase text-left text-xs text-gray-500 tracking-wider">
               <th className="px-6 py-3 font-medium">Course Code</th>
               <th className="px-6 py-3 font-medium">Course Title</th>
-              <th className="px-6 py-3 font-medium">Units</th>
+              <th className="px-6 py-3 font-medium">Unit</th>
               <th className="px-6 py-3 font-medium">Action</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {courses.map((course) => (
+            {user?.details.courses.length === 0 && <p className='m-auto'>No registered courses here. Contact your admin!</p>}
+            {/* {courses.map((course) => ( */}
+            {user?.details.courses.map((course:any) => (
               <CourseCard course={course} key={course.code} handleCreateExam={handleCreateExam} handleEditExam={handleEditExam} handleDeleteExam={handleDeleteExam} toggleDropdown={toggleDropdown} dropdownOpen={dropdownOpen}/>
             ))}
           </tbody>
@@ -109,4 +101,3 @@ export default function ManageCourses(){
       </div>
     );
   };
-  

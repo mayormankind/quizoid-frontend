@@ -1,15 +1,18 @@
 "use client";
-// import Cookies from 'js-cookie';
+
+import Cookies from 'js-cookie';
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/contexts/UserContext';
 const url = process.env.NEXT_PUBLIC_BASE_API_URL;
 
 
 export default function LecturerLogin() {
   const router = useRouter(); 
+  const { setUser } = useUser();
 
   const [lecturerId, setlecturerId] = useState("");
   const [password, setPassword] = useState("");
@@ -17,35 +20,37 @@ export default function LecturerLogin() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    router.push('/dashboard/lecturer')
-    toast.success('login successful');
+    // router.push('/dashboard/lecturer')
+    // toast.success('login successful');
     setIsSubmitting(true);
 
-    // try {
-    //   const response = await axios.post(`${url}/login`,{ lecturerId, password });
-    //   Cookies.set('token', response.data.token, {expires: 1, path: '/', sameSite: 'Strict'}); 
-    //   console.log("Login successful:", response.data);
-    //   toast.success("Login successful");
-    //   router.push('/lecturer', { scroll: false });
-    // }
-    // catch (error: any) {
-    //   if (error.response) {
-    //     toast.error(`Login failed: ${error.response.data.message}`);
-    //   } else if (error.request) {
-    //     // Request was made but no response was received
-    //     toast.error('login failed: No response from server');
-    //   } else {
-    //     // Something else happened in setting up the request
-    //     toast.error(`login failed: ${error.message}`);
-    //     console.error("Login failed:", error?.response?.data?.message);
-    //     // Display error message using toastify
-    //     toast.error("Invalid lecturer ID or password.");
-    //   }
+    try {
+      const response = await axios.post(`${url}/lecturer/login`,{ lecturerID:lecturerId, password });
+      const { token, user } = response.data;
 
-    // }
-    // finally {
-    //   setIsSubmitting(false);
-    // }
+      Cookies.set('token', token, { expires: 1, path: '/', sameSite: 'Strict' });
+    
+      setUser(user); 
+      // console.log("Login successful:", response.data );
+      toast.success("Login successful");
+      router.push('/dashboard/lecturer', { scroll: false });
+    }
+    catch (error: any) {
+      if (error.response) {
+        toast.error(`Login failed: ${error.response.data.message}`);
+      } else if (error.request) {
+        toast.error('login failed: No response from server');
+      } else {
+        toast.error(`login failed: ${error.message}`);
+        console.error("Login failed:", error?.response?.data?.message);
+        // Display error message using toastify
+        toast.error("Invalid lecturer ID or password.");
+      }
+
+    }
+    finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -86,7 +91,6 @@ export default function LecturerLogin() {
           >
             {isSubmitting ? 'Authenticating...' : 'Sign In'}
           </button>
-          
         </form>
       </div>
     </div>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
+// import { createExam } from '../api/exam';
 
 interface TheoryExamFormProps {
     courseCode: string;
     action: string;
     onSubmit: (data: any) => void;
 }
+
 
 const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onSubmit }) => {
     const [examData, setExamData] = useState({
@@ -27,6 +29,17 @@ const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onS
         e.preventDefault();
         onSubmit(examData);
     };
+
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+    //     try {
+    //         await createExam(examData);
+    //         onSubmit(examData);
+    //     } catch (error) {
+    //         console.error('Error creating exam:', error.message);
+    //     }
+    // };
+
 
     return (
         <div className="w-full h-full bg-white rounded-xl p-4">

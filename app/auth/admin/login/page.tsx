@@ -32,10 +32,8 @@ export default function AdminLogin() {
       if (error.response) {
         toast.error(`Login failed: ${error.response.data.message}`);
       } else if (error.request) {
-        // Request was made but no response was received
         toast.error('login failed: No response from server');
       } else {
-        // Something else happened in setting up the request
         toast.error(`login failed: ${error.message}`);
         console.error("Login failed:", error?.response?.data?.message);
         toast.error("Invalid admin ID or password.");

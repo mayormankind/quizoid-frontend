@@ -10,7 +10,6 @@ export default function page() {
         <div className="flex w-full gap-2">
             <Widjets/>
         </div>
-      
     </div>
   )
 }

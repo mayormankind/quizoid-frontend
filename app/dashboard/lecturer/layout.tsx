@@ -2,6 +2,7 @@
 
 import { ContentProvider } from "@/components/dashboard/lecturer/ContentContext";
 import Sidebar from "@/components/dashboard/lecturer/sidebar";
+import { useUser } from "@/contexts/UserContext";
 import { ReactNode } from "react";
 
 export default function Layout({
@@ -9,6 +10,9 @@ export default function Layout({
 }: Readonly<{
     children: ReactNode;
 }>) {
+
+    const { user } = useUser();
+    console.log(user);
 
     return (
         <html lang="en">
@@ -20,8 +24,8 @@ export default function Layout({
                             <div className='w-9/12 flex flex-col'>
                                 <div className="flex flex-col bg-white rounded-xl w-full p-4 sticky top-0">
                                     <div className="flex flex-col w-fit self-end bg-white text-gray-500">
-                                        <h2 className='font-semibold'>Welcome back, Prof. Alowonle</h2>
-                                        <span className='text-sm'>alowonle.funaab@gmail.com</span>
+                                        <h2 className='font-semibold'>Welcome back,<span>{user?.name}</span></h2>
+                                        <span className='text-sm'>{user?.details.lecturerID}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col p-8">
