@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/exam';
+const API_URL = 'http://localhost:3000/api/exams';
 
 interface ExamData {
     instruction: string;
@@ -61,13 +61,17 @@ export const updateExam = async (id: string, examData: ExamData) => {
     }
 };
 
-export const deleteExam = async (id: string) => {
-    try {
-        const response = await axios.delete(`${API_URL}/${id}`, {
-            headers: { 'x-auth-token': localStorage.getItem('token') as string },
-        });
-        return response.data;
-    } catch (error: any) {
-        throw error.response.data;
-    }
+
+export const deleteExam = async (courseCode: string) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${courseCode}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to delete exam');
+  }
+};
+
+export const checkExam = async (courseCode:string) => {
+  const response = await axios.get(`${API_URL}/check/${courseCode}`);
+  return response;
 };

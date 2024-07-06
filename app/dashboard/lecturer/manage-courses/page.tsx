@@ -4,68 +4,86 @@ import { useRouter } from 'next/navigation';
 import CourseCard from '@/components/dashboard/lecturer/CourseCard';
 import ExamChoiceModal from '@/components/dashboard/lecturer/ExamChoiceModal';
 import React, { useState, useEffect } from 'react';
-import { createExam, getExams, updateExam, getExamsByLecturerID, deleteExam } from '@/api/exam';
+import { createExam, getExams, updateExam, getExamsByLecturerID, deleteExam, checkExam } from '@/api/exam';
 import { useUser } from '@/contexts/UserContext';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 
 interface Course {
   code: string;
   title: string;
   unit: number;
-  examExists?: boolean;
+  // examExists?: boolean;
   examType?: 'theory' | 'multichoice';
 }
 
-export default function ManageCourses(){
-  const { user } = useUser();
-  const router = useRouter();
-  const url = process.env.NEXT_PUBLIC_BASE_API_URL;
-
-    const [ courses, setCourses ] = useState<Course[]>(user?.details.courses);
+  export default function ManageCourses() {
+      const { user } = useUser();
+      const router = useRouter();
+      const [courses, setCourses] = useState<Course[]>(user?.details.courses);
+      const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     
-    const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-
-    const toggleDropdown = (courseCode: string)=> {
+      const toggleDropdown = (courseCode: string) => {
         setDropdownOpen(prevState => ({ ...prevState, [courseCode]: !prevState[courseCode] }));
-    };
-
-    const handleCreateExam = (course: Course)=> {
-        if (course.examExists) {
-            alert('Exam already exists for this course.');
+      };
+    
+      const handleCreateExam = async (course: Course) => {
+        try {
+          const response = await checkExam(course.code);
+          if (response.status === 200) {
+            toast.error('Exam already exists for this course.');
             return;
+          }
+        } catch (error: any) {
+          if (error.response && error.response.status === 404) {
+            setSelectedCourse(course);
+            setIsModalOpen(true);
+          } else {
+            toast.error('Error checking exam existence.');
+            console.error(error);
+          }
         }
-        setSelectedCourse(course);
-        setIsModalOpen(true);
-    };
+      };
 
-    const handleEditExam = (course: Course)=> {
-        if (!course.examExists) {
-            alert('No exam exists for this course.');
-            return;
+    const handleEditExam = async (course: Course)=> {
+      try {
+        const response = await checkExam(course.code);
+        if (response.status === 200) {
+          toast.error('No exam exists for this course.');
+          return;
         }
-        if (course.examType) {
-          router.push(`/dashboard/lecturer/exam-form/${course.examType}?code=${course.code}&action=edit`);
+      } catch (error: any) {
+        if (error.response && error.response.status === 404) {
+          if (course.examType) {
+            router.push(`/dashboard/lecturer/exam-form/${course.examType}?code=${course.code}&action=edit`);
+          } else {
+            alert('Exam type is not specified for this course.');
+          }
         } else {
-          alert('Exam type is not specified for this course.');
+          toast.error('Error checking exam existence.');
+          console.error(error);
         }
+      }
+        // if (!course.examExists) {
+        //     alert('No exam exists for this course.');
+        //     return;
+        // }
     };
 
 
     const handleDeleteExam = async (course: Course) => {
 
-      if (!course.examExists) {
-        alert('No exam exists to delete for this course.');
-        return;
-      }
       try {
         await deleteExam(course.code);
-        setCourses(prevCourses => prevCourses.map(c => c.code === course.code ? { ...c, examExists: false } : c));
-        alert(`Deleted exam for ${course.code}`);
-      } catch (error) {
-        console.error(error);
+        toast.success(`Exam for ${course.code} deleted successfully`);
+      } catch (error:any) {
+        if(error.response){
+          toast.error(error.response.data.message)
+          console.error(error);
+        }
       }
     };
 
