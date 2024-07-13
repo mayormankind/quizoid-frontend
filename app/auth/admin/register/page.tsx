@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 export default function RegisterAdmin() {
   const router = useRouter();
@@ -25,9 +24,9 @@ export default function RegisterAdmin() {
 
     setIsSubmitting(true);
     try {
-      const response = await axios.post(`${url}/register`, { adminID, name, password });
+      const response = await axios.post(`${url}/admin/register`, { adminID, name, password });
       toast.success('Registration successful!');
-      router.push('/auth/login'); // Redirect to the login page after successful registration
+      router.push('/auth/admin/login'); // Redirect to the login page after successful registration
     } catch (error: any) {
       if (error.response) {
         toast.error(`Registration failed: ${error.response.data.message}`);
@@ -95,7 +94,7 @@ export default function RegisterAdmin() {
           </button>
         </form>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </div>
   );
 }

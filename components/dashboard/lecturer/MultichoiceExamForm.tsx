@@ -1,6 +1,8 @@
+import { createExam } from '@/api/exam';
+import { useUser } from '@/contexts/UserContext';
 import React, { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
-// import { createExam } from '../api/exam';
+import { toast } from 'react-toastify';
 
 
 interface MultichoiceExamFormProps {
@@ -16,14 +18,22 @@ interface Question {
 }
 
 interface ExamData {
+    courseCode: string;
     instruction: string;
+    type: string;
     questions: Question[];
+    lecturerID: string;
 }
 
 const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, action, onSubmit }) => {
+
+    const { user } = useUser();
     const [examData, setExamData] = useState<ExamData>({
+        courseCode,
         instruction: '',
+        type: 'multichoice',
         questions: [{ question: '', options: ['', '', '', ''], correctOption: 0 }],
+        lecturerID: user?.details.lecturerID,
     });
 
     const handleQuestionChange = (index: number, value: string) => {
@@ -47,24 +57,23 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, a
     const addQuestion = () => {
         setExamData({
             ...examData,
+            instruction: examData.instruction,
+            type: 'multichoice',
             questions: [...examData.questions, { question: '', options: ['', '', '', ''], correctOption: 0 }],
+            lecturerID: user?.details.lecturerID,
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(examData);
+        try {
+            const response = await createExam(examData);
+            onSubmit(examData);
+            toast.success(response.message)
+        } catch (error:any) {
+            toast.error('Error creating exam:', error.message);
+        }
     };
-
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     try {
-    //         await createExam(examData);
-    //         onSubmit(examData);
-    //     } catch (error) {
-    //         console.error('Error creating exam:', error.message);
-    //     }
-    // };
 
     return (
         <div className="w-full h-full bg-white rounded-xl p-4">
@@ -105,7 +114,7 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, a
                                 Correct Option:
                                 <select
                                     value={question.correctOption}
-                                    onChange={(e) => handleCorrectOptionChange(qIndex, 1 + parseInt(e.target.value))}
+                                    onChange={(e) => handleCorrectOptionChange(qIndex, parseInt(e.target.value))}
                                     className="border w-1/6 p-2 rounded ml-2"
                                 >
                                     {question.options.map((v, index) => (

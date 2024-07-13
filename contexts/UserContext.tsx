@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -24,17 +26,25 @@ interface UserProviderProps {
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const role = process.env.NEXT_PUBLIC_USER_TYPE;
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = Cookies.get('token');
+    if (token) {
+      const storedUser = Cookies.get('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } else {
+      router.push(`/auth/${role}/login`);
     }
   }, []);
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    Cookies.remove('token');
+    Cookies.remove('user');
   };
 
   return (

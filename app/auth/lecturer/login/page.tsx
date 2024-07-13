@@ -3,12 +3,11 @@
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/contexts/UserContext';
 const url = process.env.NEXT_PUBLIC_BASE_API_URL;
-
 
 export default function LecturerLogin() {
   const router = useRouter(); 
@@ -20,35 +19,28 @@ export default function LecturerLogin() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // router.push('/dashboard/lecturer')
-    // toast.success('login successful');
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/lecturer/login`,{ lecturerID:lecturerId, password });
+      const response = await axios.post(`${url}/lecturer/login`, { lecturerID: lecturerId, password });
       const { token, user } = response.data;
 
       Cookies.set('token', token, { expires: 1, path: '/', sameSite: 'Strict' });
-    
+      Cookies.set('user', JSON.stringify(user), { expires: 1, path: '/', sameSite: 'Strict' });
+
       setUser(user); 
-      // console.log("Login successful:", response.data );
       toast.success("Login successful");
       router.push('/dashboard/lecturer', { scroll: false });
-    }
-    catch (error: any) {
+    } catch (error: any) {
       if (error.response) {
         toast.error(`Login failed: ${error.response.data.message}`);
       } else if (error.request) {
-        toast.error('login failed: No response from server');
+        toast.error('Login failed: No response from server');
       } else {
-        toast.error(`login failed: ${error.message}`);
+        toast.error(`Login failed: ${error.message}`);
         console.error("Login failed:", error?.response?.data?.message);
-        // Display error message using toastify
-        toast.error("Invalid lecturer ID or password.");
       }
-
-    }
-    finally {
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -59,11 +51,12 @@ export default function LecturerLogin() {
         <h2 className="text-2xl font-bold text-center">Lecturer Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="admin" className="block text-sm font-medium text-gray-700">
-              Lecturer ID or email
+            <label htmlFor="lecturerId" className="block text-sm font-medium text-gray-700">
+              Lecturer ID or Email
             </label>
             <input
               type="text"
+              id="lecturerId"
               value={lecturerId}
               onChange={(e) => setlecturerId(e.target.value)}
               required

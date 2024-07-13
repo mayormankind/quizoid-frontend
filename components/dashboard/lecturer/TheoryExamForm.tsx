@@ -1,6 +1,8 @@
+import { createExam } from '@/api/exam';
+import { useUser } from '@/contexts/UserContext';
 import React, { useState } from 'react';
 import { RiAddFill } from 'react-icons/ri';
-// import { createExam } from '../api/exam';
+import { toast } from 'react-toastify';
 
 interface TheoryExamFormProps {
     courseCode: string;
@@ -8,11 +10,24 @@ interface TheoryExamFormProps {
     onSubmit: (data: any) => void;
 }
 
+interface ExamData {
+    courseCode: string;
+    instruction: string;
+    type: string;
+    questions: string[];
+    lecturerID: string;
+}
 
-const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onSubmit }) => {
-    const [examData, setExamData] = useState({
+
+const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onSubmit })=> {
+
+    const { user } = useUser();
+    const [examData, setExamData] = useState<ExamData>({
+        courseCode,
         instruction: '',
+        type: 'theory',
         questions: [''],
+        lecturerID: user?.details.lecturerID,
     });
 
     const handleQuestionChange = (index: number, value: string) => {
@@ -25,20 +40,16 @@ const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onS
         setExamData({ ...examData, questions: [...examData.questions, ''] });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(examData);
+        try {
+            const response = await createExam(examData);
+            onSubmit(examData);
+            toast.success(response.message);
+        } catch (error:any) {
+            console.error('Error creating exam:', error.message);
+        }
     };
-
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
-    //     try {
-    //         await createExam(examData);
-    //         onSubmit(examData);
-    //     } catch (error) {
-    //         console.error('Error creating exam:', error.message);
-    //     }
-    // };
 
 
     return (

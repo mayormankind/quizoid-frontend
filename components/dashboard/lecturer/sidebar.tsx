@@ -28,8 +28,8 @@ export default function Sidebar() {
         router.push('/auth/lecturer/login');
         logout();
         console.log('You have signed out chief');
-
     }
+    
   return (
     <div className='w-3/12 bg-white h-screen'>
         <div className="flex flex-col justify-between h-full p-8">
@@ -53,12 +53,10 @@ export default function Sidebar() {
                         <h2 className={`${content === 'Settings' ? 'font-medium text-gray-700':'text-gray-500'}`}>Settings</h2>
                     </li>
                 </Link>
-                {/* <Link href="/auth/lecturer/login"> */}
-                    <li className={'flex text-red-500 items-center p-4 gap-4 hover:bg-green-50'} onClick={handleSignOut}>
-                        <i className='text-[17px]'><RiLogoutBoxLine/></i>
-                        <h2 className="">Logout</h2>
-                    </li>
-                {/* </Link> */}
+                <li className={'flex text-red-500 items-center p-4 gap-4 hover:bg-green-50'} onClick={handleSignOut}>
+                    <i className='text-[17px]'><RiLogoutBoxLine/></i>
+                    <h2 className="">Logout</h2>
+                </li>
             </ul>
         </div>
     </div>

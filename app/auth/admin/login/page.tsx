@@ -2,16 +2,15 @@
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
-import path from 'path';
+import { useUser } from '@/contexts/UserContext';
 const url = process.env.NEXT_PUBLIC_BASE_API_URL;
-
 
 
 export default function AdminLogin() {
   const router = useRouter(); 
+  const { setUser } = useUser();
 
   const [adminID, setadminID] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +21,13 @@ export default function AdminLogin() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${url}/login`,{ adminID, password });
-      Cookies.set('token', response.data.token, {expires: 1, path: '/', sameSite: 'Strict'}); 
-      console.log("Login successful:", response.data);
+      const response = await axios.post(`${url}/admin/login`,{ adminID, password });
+      const { token, user } = response.data;
+
+      Cookies.set('token', token, { expires: 1, path: '/', sameSite: 'Strict' });
+      Cookies.set('user', JSON.stringify(user), { expires: 1, path: '/', sameSite: 'Strict' });
+
+      setUser(user);
       toast.success("Login successful");
       router.push('/dashboard/admin', { scroll: false });
     }
@@ -95,11 +98,10 @@ export default function AdminLogin() {
           </button>
         </form>
         <div className="text-sm text-center">
-          <a href="/auth/register" className="font-medium text-green-600 hover:text-green-500">
+          <a href="/auth/admin/register" className="font-medium text-green-600 hover:text-green-500">
             Don't have an account? Register
           </a>
         </div>
-        <ToastContainer />
       </div>
     </div>
   );
