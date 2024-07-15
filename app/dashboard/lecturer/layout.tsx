@@ -12,7 +12,6 @@ export default function Layout({
 }>) {
 
     const { user } = useUser();
-    console.log(user);
 
     return (
         <html lang="en">

@@ -2,6 +2,7 @@
 
 import MultichoiceExamForm from '@/components/dashboard/lecturer/MultichoiceExamForm';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const MultichoiceExamPage = () => {
     const router = useRouter();
@@ -11,7 +12,7 @@ const MultichoiceExamPage = () => {
 
     const handleSubmit = (data: any) => {
         // Handle the submit logic here
-        alert(`Creating multi-choice exam for ${code}`);
+        toast.success(`Creating multi-choice exam for ${code}`);
         console.log(data);
         router.push('/dashboard/lecturer/manage-courses');
     };

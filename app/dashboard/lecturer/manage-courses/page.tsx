@@ -9,82 +9,81 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import CourseCard from '@/components/dashboard/lecturer/CourseCard';
 
-
 interface Course {
-  code: string;
-  title: string;
-  unit: number;
-  examType?: 'theory' | 'multichoice';
+    code: string;
+    title: string;
+    unit: number;
+    examType?: 'theory' | 'multichoice';
 }
 
-  export default function ManageCourses() {
-      const { user } = useUser();
-      const router = useRouter();
-      const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
+export default function ManageCourses() {
 
-      const [isModalOpen, setIsModalOpen] = useState(false);
+    const { user } = useUser();
+    const router = useRouter();
+    const [dropdownOpen, setDropdownOpen] = useState<{ [key: string]: boolean }>({});
 
-      const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     
-      const toggleDropdown = (courseCode: string)=> {
+    const toggleDropdown = (courseCode: string)=> {
         setDropdownOpen(prevState => ({ ...prevState, [courseCode]: !prevState[courseCode] }));
-      };
+    };
     
-      const handleCreateExam = async (course: Course)=> {
+    const handleCreateExam = async (course: Course)=> {
         try {
-          const response = await checkExam(course.code);
-          console.log(response)
-          if (response.status === 200) {
-            toast.error('Exam already exists for this course.');
-            alert('Exam already exists for this course.');
-            return;
-          }
+            const response = await checkExam(course.code);
+            console.log(response)
+            if (response.status === 200) {
+                toast.error('Exam already exists for this course.');
+                alert('Exam already exists for this course.');
+                return;
+            }
         } catch (error: any) {
             setSelectedCourse(course);
             setIsModalOpen(true);
         }
-      };
-
-    const handleEditExam = async (course: Course)=> {
-      try {
-        const response = await checkExam(course.code);
-        console.log(response)
-        if (response.status === 200) {
-          if (course.examType) {
-            router.push(`/dashboard/lecturer/exam-form/${course.examType}?code=${course.code}&action=edit`);
-          } else {
-            alert('Exam type is not specified for this course.');
-          }
-        }
-      } catch (error: any) {
-          console.error(error);
-          alert(error.message);
-        }
-      }
     };
 
+  
     const handleDeleteExam = async (course: Course)=> {
-      try {
-        await deleteExam(course.code);
-        toast.success(`Exam for ${course.code} deleted successfully`);
-      } catch (error:any) {
-        if(error.response){
-          toast.error(error.response.data.message)
-          console.error(error);
+        try {
+            await deleteExam(course.code);
+            toast.success(`Exam for ${course.code} deleted successfully`);
+        } catch (error:any) {
+            if(error.response){
+                toast.error(error.response.data.message)
+                console.error(error);
+            }
         }
-      }
     };
 
     const handleSelectExamType = (type: 'theory' | 'multichoice')=> {
-      if (selectedCourse) {
-          router.push(`/dashboard/lecturer/exam-form/${type}?code=${selectedCourse.code}&action=create`);
-      }
-      setIsModalOpen(false);
+        if (selectedCourse) {
+            router.push(`/dashboard/lecturer/exam-form/${type}?code=${selectedCourse.code}&action=create`);
+        }
+        setIsModalOpen(false);
     };
-    
-  
-    return (
-      <div className='w-full h-full bg-white rounded-xl p-4'>
+
+    const handleEditExam = async (course: Course)=> {
+        try {
+            const response = await checkExam(course.code);
+            console.log(response)
+            if (response.status === 200) {
+                if (course.examType) {
+                router.push(`/dashboard/lecturer/exam-form/${course.examType}?code=${course.code}&action=edit`);
+            } else {
+                alert('Exam type is not specified for this course.');
+            }
+          }
+        } catch (error: any) {
+            console.error(error);
+            alert(error.message);
+        }
+    }
+
+  return (
+    <div className='w-full h-full bg-white rounded-xl p-4'>
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr className="uppercase text-left text-xs text-gray-500 tracking-wider">
@@ -103,5 +102,5 @@ interface Course {
         </table>
         <ExamChoiceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectExamType={handleSelectExamType}/>
       </div>
-    );
-  };
+  )
+}

@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type ContentContextType = {
     content: string;
-    setContent: (content: string) => void;
+    setContent: (content: string)=> void;
 };
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const ContentProvider = ({ children }: { children: ReactNode })=> {
-    const [content, setContent] = useState('Dashboard');
+    const [content, setContent] = useState('Students');
 
     return (
         <ContentContext.Provider value={{ content, setContent }}>

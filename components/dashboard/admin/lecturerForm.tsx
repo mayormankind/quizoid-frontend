@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,8 +11,10 @@ export default function LecturerForm() {
     lecturerID: '',
     password: '',
     department: '',
-    courses: [{ title: '', code: '' }]
+    courses: [{ title: '', code: '', unit: '' }]
   });
+
+  const url = process.env.NEXT_PUBLIC_BASE_API_URL;
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
@@ -32,7 +35,7 @@ export default function LecturerForm() {
   const handleAddCourse = () => {
     setFormData({
       ...formData,
-      courses: [...formData.courses, { title: '', code: '' }]
+      courses: [...formData.courses, { title: '', code: '', unit: '' }]
     });
   };
 
@@ -45,9 +48,17 @@ export default function LecturerForm() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:3000/api/lecturers/add', formData);
+      const response = await axios.post(`${url}/lecturer/add`, formData);
+      console.log(response);
       console.log('Response:', response.data);
       toast.success('Lecturer added successfully!');
+      setFormData({
+        name: '',
+        lecturerID: '',
+        password: '',
+        department: '',
+        courses: [{ title: '', code: '', unit: '' }]
+      });
     } catch (error: any) {
       console.error('Error submitting form:', error);
       if (error.response && error.response.data) {
@@ -110,21 +121,17 @@ export default function LecturerForm() {
         {formData.courses.map((course, index) => (
           <div key={index} className="mt-2">
             <input
-              type="text"
-              name="title"
-              value={course.title}
+              type="text" name="title" value={course.title}
               placeholder="Course Title"
               onChange={(e) => handleCourseChange(index, e)}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-            />
+              className="mt-1 block w-full p-2 border border-gray-300 rounded" />
+            <input type="text" name="code" value={course.code}
+              placeholder="Course Code" onChange={(e) => handleCourseChange(index, e)} className="mt-1 block w-full p-2 border border-gray-300 rounded" />
             <input
-              type="text"
-              name="code"
-              value={course.code}
-              placeholder="Course Code"
+              type="text" name="unit"
+              value={course.unit} placeholder="Course Unit"
               onChange={(e) => handleCourseChange(index, e)}
-              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-            />
+              className="mt-1 block w-full p-2 border border-gray-300 rounded"/>
             <button
               type="button"
               onClick={() => handleRemoveCourse(index)}

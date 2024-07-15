@@ -8,7 +8,6 @@ interface User {
   id: string;
   name: string;
   role: 'lecturer' | 'admin' | 'student';
-  token: string;
   details: any; 
 }
 

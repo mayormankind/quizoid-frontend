@@ -27,17 +27,22 @@ const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onS
         instruction: '',
         type: 'theory',
         questions: [''],
-        lecturerID: user?.details.lecturerID,
+        lecturerID: '',
     });
 
     const handleQuestionChange = (index: number, value: string) => {
         const questions = [...examData.questions];
         questions[index] = value;
         setExamData({ ...examData, questions });
-    };
+    }; 
 
     const addQuestion = () => {
-        setExamData({ ...examData, questions: [...examData.questions, ''] });
+        setExamData({ ...examData, 
+            instruction: examData.instruction,
+            type: 'theory',
+            lecturerID: user?.details.lecturerID,
+            questions: [...examData.questions, ''] 
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -46,6 +51,13 @@ const TheoryExamForm: React.FC<TheoryExamFormProps> = ({ courseCode, action, onS
             const response = await createExam(examData);
             onSubmit(examData);
             toast.success(response.message);
+            setExamData({
+                courseCode,
+                instruction: '',
+                type: 'theory',
+                questions: [''],
+                lecturerID: '',
+            })
         } catch (error:any) {
             console.error('Error creating exam:', error.message);
         }

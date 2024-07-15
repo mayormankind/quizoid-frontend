@@ -33,7 +33,7 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, a
         instruction: '',
         type: 'multichoice',
         questions: [{ question: '', options: ['', '', '', ''], correctOption: 0 }],
-        lecturerID: user?.details.lecturerID,
+        lecturerID: '',
     });
 
     const handleQuestionChange = (index: number, value: string) => {
@@ -70,6 +70,13 @@ const MultichoiceExamForm: React.FC<MultichoiceExamFormProps> = ({ courseCode, a
             const response = await createExam(examData);
             onSubmit(examData);
             toast.success(response.message)
+            setExamData({
+                courseCode,
+                instruction: '',
+                type: 'multichoice',
+                questions: [{ question: '', options: ['', '', '', ''], correctOption: 0 }],
+                lecturerID: '',
+            });
         } catch (error:any) {
             toast.error('Error creating exam:', error.message);
         }
